@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"html/template"
+	//"html/template"
 	"io/ioutil"
 	"log"
 	"net"
-	"net/http"
+	//"net/http"
 	"strings"
 
 	"github.com/thoj/go-ircevent"
@@ -40,20 +40,20 @@ type Bot struct {
 }
 
 // Generalized version of rendering code
-func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
-	t, _ := template.ParseFiles(htmlFolder + tmpl + ".html")
-	t.Execute(w, p)
-}
+// func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
+// 	t, _ := template.ParseFiles(htmlFolder + tmpl + ".html")
+// 	t.Execute(w, p)
+// }
 
 // Handles the index of our webserver
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	title := r.URL.Path[len("/"):]
-
-	// '_' handles any unhandled returned values. In this case, it's the 'err' return variable
-	p, _ := loadPage(title)
-
-	renderTemplate(w, "index", p)
-}
+// func indexHandler(w http.ResponseWriter, r *http.Request) {
+// 	title := r.URL.Path[len("/"):]
+//
+// 	// '_' handles any unhandled returned values. In this case, it's the 'err' return variable
+// 	p, _ := loadPage(title)
+//
+// 	renderTemplate(w, "index", p)
+// }
 
 func readOauthToken() string {
 	creds, err := ioutil.ReadFile(filename)
