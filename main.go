@@ -3,11 +3,9 @@ package main
 import (
 	"fmt"
 	//"html/template"
-	"io/ioutil"
-	"log"
-	"net"
 	//"net/http"
 	"strings"
+	"flag"
 
 	"github.com/thoj/go-ircevent"
 	"gopkg.in/mgo.v2"
@@ -21,23 +19,11 @@ const (
 	// Twitch Variables
 	bot_owner = "cmalloc"
 	bot       = "cmalloc"
-	channel   = "#cmalloc"
 	server    = "irc.chat.twitch.tv"
 )
 
-// http://stackoverflow.com/questions/13342128/simple-golang-irc-bot-keeps-timing-out
-// Great thanks to jwesonga for the code
-type Bot struct {
-	serv          string
-	port          string
-	nick          string
-	user          string
-	chann         string
-	auth          string
-	pread, pwrite chan string
-	conn          net.Conn
-	message       string
-}
+
+
 
 // Generalized version of rendering code
 // func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
@@ -55,108 +41,116 @@ type Bot struct {
 // 	renderTemplate(w, "index", p)
 // }
 
-func readOauthToken() string {
-	creds, err := ioutil.ReadFile(filename)
-	if err != nil {
-		fmt.Printf("Couldn't read credentials\n")
-		panic(err.Error())
-	}
-	return string(creds)
-}
+
 
 func connectBot() {
 
 }
 
-func spawnBot() *Bot {
-	return &Bot{serv: server + ":6667",
-		port:    "6667",
-		nick:    "cmallocbot",
-		user:    "DefinitelyNotAndrew",
-		chann:   "#herald_likem",
-		auth:    readOauthToken(),
-		message: "Test message, please ignore"}
-}
+func main() {
+	channel := "#cmalloc"
+	//debugFlag := false
 
-func (bot *Bot) Connect() (conn net.Conn, err error) {
+	// Handle channel flag
+	cmdChannel := flag.String("c", channel, "Usage: TwitchEmoji [<channel>]")
+	//cmdDebug := flag.Bool("d", debugFlag, "[-d]")
+	flag.Parse()
 
-	fmt.Printf("Using auth token:%v\n", bot.auth)
+	*cmdChannel = "#" + *cmdChannel
+	fmt.Printf("Flag: %v\n", *cmdChannel)
 
-	fmt.Printf("Connecting to irc server: %v\n", server)
-	connString := server + ":6667"
-	connection, err := net.Dial("tcp", connString)
-	if err != nil {
-		fmt.Printf("Connecting is hard: %v\n", err.Error())
-		log.Fatal("Unable to connect to IRC server ", err)
+	if *cmdChannel != channel {
+		channel = *cmdChannel
 	}
 
-	bot.conn = connection
-	log.Printf("Connected to IRC server %s (%s)\n", bot.serv, bot.conn.RemoteAddr())
-	return bot.conn, nil
+	// if *cmdDebug != debugFlag {
+	// 	debugFlag = *cmdDebug
+	// }
 
-}
-
-type Emoji struct {
-	Id    bson.ObjectId `bson:"_id"`
-	Emoji string        `bson:"emoji"`
-	Count int           `bson:"count"`
-}
-
-func main() {
 	// Connect to database, https://labix.org/mgo
 	session, err := mgo.Dial("localhost:27017")
 	if err != nil {
 		panic(err)
 	}
 
+	// Add connection close to the stack
 	defer session.Close()
 
+	// Access the appropriate collection
 	c := session.DB("TwitchEmoji").C("emoji")
+	//
+	// test := Emoji{Id: bson.NewObjectId(), Emoji: "sodaNOPE", Count: 10}
+	// err = c.Insert(test)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	test := Emoji{Emoji: "JKanStyle", Count: 0}
-	c.Insert(test)
+	var emojis = new([]Emoji)
+	c.Find(bson.M{}).All(emojis)
 
-	var emojis []Emoji
-	c.Find(bson.M{}).All(&emojis)
 
-	for _, val := range emojis {
-		fmt.Println(val.Id, val.Emoji, val.Count)
-	}
+	// emojiList := []*Emoji{}
 
-	ircBot := spawnBot()
+	// Note: the 'range' operator creates a copy of the data to iterate over. You
+	// cannot alter data inside of that loop unless you use pointers to each
+	// object
+	// for _, val := range *emojis {
+	// 	fmt.Println(val.Id, val.Emoji, val.Count)
+	// 	emojiList = append(emojiList, &val)
+	// }
+	//
+	// for _, val := range emojiList {
+	// 	fmt.Println(val.Id, val.Emoji, val.Count)
+	// }
+
+	// This isn't pretty, need to find the correct way to instantiate an object
+	ircBot := new(Bot)
+	ircBot = ircBot.spawnBot(channel, filename)
 	testConn := irc.IRC(ircBot.nick, ircBot.user)
 	testConn.Password = ircBot.auth
 
 	testConn.VerboseCallbackHandler = false
 	testConn.Debug = false
 	testConn.UseTLS = false
+
+	// Register event handlers
 	testConn.AddCallback("001", func(e *irc.Event) { testConn.Join(ircBot.chann) })
 
+	messages := 0
+	// Any message sent on the server
 	testConn.AddCallback("PRIVMSG", func(event *irc.Event) {
-		fmt.Printf("%v:%v:%v\n", event.Arguments[0], event.User, event.Message())
-		//if strings.Contains(event.Message(), "kappa") == true {
-		//	testConn.Privmsg(ircBot.chann, "kappa")
-		//}
-
-		if strings.Contains(event.Message(), "!kojima") == true {
-			testConn.Privmsg(ircBot.chann, "KOOOOOOOOOJIMA")
-		}
-
-		if strings.Contains(event.Message(), "!rick") == true {
-			testConn.Privmsg(ircBot.chann, "Fuck off Kevin")
-		}
-
-		if strings.Contains(event.Message(), ":)") == true {
-			// change := mgo.Change{
-			// 	Update: bson.M{"$inc":bson.M{":)":1}},
-			// 	ReturnNew: true,
-			// }
-		}
-		//info, err := c.Find(M{"_id": id}).Apply(change, &doc)
-
+		messages++
 		//event.Message() contains the message
 		//event.Nick Contains the sender
 		//event.Arguments[0] Contains the channel
+
+		// spawn thread, record message
+		go createMessage(event)
+		fmt.Printf("%v:%v:%v\n", event.Arguments[0], event.User, event.Message())
+
+		if event.User == "Atrum_Cordis" {
+			fmt.Printf("BILL!")
+		}
+
+		if strings.Contains(event.Message(), "!kojima") {
+			testConn.Privmsg(ircBot.chann, "KOOOOOOOOOJIMA")
+		}
+
+		if strings.Contains(event.Message(), "!rick") {
+			testConn.Privmsg(ircBot.chann, "Fuck off Kevin")
+		}
+
+		if strings.Contains(event.Message(), "!kevin") {
+			testConn.Privmsg(ircBot.chann, "Metal Gear is not a stealth game")
+		}
+
+		// Do this last
+		// if messages > 25 {
+		// 	for _, val := range *emojis {
+		// 		fmt.Println(val.Emoji, val.Count)
+		// 	}
+		// 	messages = 0
+		// }
 	})
 
 	// testConn.AddCallback("366", func(e *irc.Event) { })
