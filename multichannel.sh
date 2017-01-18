@@ -1,2 +1,2 @@
 #/usr/bin/bash
-cat channels | xargs -P 10 -I @@ ./TwitchEmojis -c @@
+cat channels | xargs -P 20 -I @@ ./TwitchEmojis -c @@
