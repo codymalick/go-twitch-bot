@@ -1,12 +1,13 @@
 package main
 
-import(
-	"io/ioutil"
+import (
 	"flag"
+	"io/ioutil"
 )
+
 const (
 	// Twitch Variables
-	server = "irc.chat.twitch.tv:6667"
+	server   = "irc.chat.twitch.tv:6667"
 	database = "localhost:27017"
 )
 
