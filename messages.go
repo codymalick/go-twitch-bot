@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/thoj/go-ircevent"
-	"gopkg.in/mgo.v2"
+	//"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -17,25 +17,14 @@ type Message struct {
 	Channel string        `bson:"channel"`
 }
 
-func createMessage(event *irc.Event) {
+func createMessage(event *irc.Event, db string) {
+	// Format message in form that the database can use
 	mes := Message{Id: bson.NewObjectId(), Time: time.Now().Unix(), User: event.User,
 		Message: event.Message(), Channel: event.Arguments[0]}
 
-	// Connect to database, https://labix.org/mgo
-	session, err := mgo.Dial("localhost:27017")
-	if err != nil {
-		panic(err)
-	}
-
-	// Add connection close to the stack
-	defer session.Close()
-
-	// Access the appropriate collection
-	c := session.DB("TwitchEmoji").C(strings.TrimPrefix(event.Arguments[0], "#"))
-	err = c.Insert(mes)
+	err := dbInsert(mes, db, strings.TrimPrefix(event.Arguments[0], "#"))
 
 	if err != nil {
 		panic(err)
 	}
-
 }

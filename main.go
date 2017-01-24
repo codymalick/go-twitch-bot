@@ -1,41 +1,51 @@
 package main
 
 import(
-"fmt"
-//"html/template"
-//"net/http"
-// "strings"
-"flag"
-
-// "github.com/thoj/go-ircevent"
-// "gopkg.in/mgo.v2"
-// "gopkg.in/mgo.v2/bson"
+	"io/ioutil"
+	"flag"
 )
 const (
-	htmlFolder = "html/"
-
-	filename = ".config/secret"
 	// Twitch Variables
-	bot_owner = "cmalloc"
-	bot       = "cmalloc"
-	server    = "irc.chat.twitch.tv"
-	emojifile = "emojiList"
+	server = "irc.chat.twitch.tv:6667"
+	database = "localhost:27017"
 )
+
+func readUserVariables(file string) string {
+	value, err := ioutil.ReadFile(file)
+	if err != nil {
+		panic(err.Error())
+	}
+	return string(value)
+}
 
 func main() {
 
+	// read user variables
+	user := readUserVariables("config/user")
+	// Identical to user, twitch doesn't care about nicknames, but we need one
+	nick := user
+
+	oauth := readUserVariables("config/secret")
 	channel := "#cmalloc"
-	//debugFlag := false
+	debugFlag := false
+
+	db := "go-twitch-bot"
 
 	// Handle channel flag
 	cmdChannel := flag.String("c", channel, "Usage: TwitchEmoji [<channel>]")
+	// cmdDebug := flag.String("d", channel, "Usage")
 	flag.Parse()
 
 	*cmdChannel = "#" + *cmdChannel
-	fmt.Printf("Flag: %v\n", *cmdChannel)
 
 	if *cmdChannel != channel {
 		channel = *cmdChannel
 	}
-	botMain(channel)
+
+	// if cmdDebug != nil  {
+	// 	debugFlag = true
+	// }
+
+	// user, nick, channel, debug
+	botMain(user, nick, channel, oauth, db, debugFlag)
 }
