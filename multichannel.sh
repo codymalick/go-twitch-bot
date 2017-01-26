@@ -1,2 +1,2 @@
 #/usr/bin/bash
-cat channels | xargs -P 21 -I @@ ./go-twitch-bot -c @@
+cat channels | xargs -P 22 -I @@ ./go-twitch-bot -c @@

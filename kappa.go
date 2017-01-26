@@ -12,7 +12,7 @@ func kappaCounter(username string, db string, connection *irc.Connection, channe
 		// Add the user!
 		newUser := User{bson.NewObjectId(), username, 0}
 		dbInsert(newUser, db, userCollection)
-		message := username + "! You've been add to kappa counter! Your kappa count is 0"
+		message := username + "! You've been added to kappa counter! Your kappa count is 0"
 		connection.Privmsg(channel, message)
 	} else {
 		kappaCount := strconv.FormatInt(user.KappaCount, 10)
