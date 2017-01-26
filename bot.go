@@ -5,8 +5,6 @@ import (
 	"strings"
 
 	"github.com/thoj/go-ircevent"
-	//"gopkg.in/mgo.v2"
-	//"gopkg.in/mgo.v2/bson"
 )
 
 func registerEvents(connection *irc.Connection, channel string, db string, user string) {
@@ -37,15 +35,31 @@ func registerEvents(connection *irc.Connection, channel string, db string, user 
 			connection.Privmsg(channel, "Metal Gear is not a stealth game")
 		}
 
-		if strings.Contains(event.Message(), "hey " + user) {
+		if strings.Contains(event.Message(), "hey "+user) {
 			connection.Privmsg(channel, "B) Hello Dave")
 		}
+		if strings.Contains(event.Message(), "KappaHD ") ||
+			strings.Contains(event.Message(), "MiniK ") ||
+			strings.Contains(event.Message(), "Kappa ") ||
+			strings.Contains(event.Message(), "kappa") {
+
+			go incrementKappa(event.User, db)
+
+		}
+
+		if strings.Contains(event.Message(), "!mykappa") {
+			go kappaCounter(event.User, db, connection, channel)
+		}
+		if strings.Contains(event.Message(), "!globalkappa") {
+			go globalKappaCounter(event.User, db, connection, channel)
+		}
+
 	})
 
 }
 
 func botMain(user string, nick string, channel string, oauth string, db string,
-	 debug bool) {
+	debug bool) {
 
 	connection := irc.IRC(nick, user)
 	connection.Password = oauth
