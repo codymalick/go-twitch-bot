@@ -23,3 +23,6 @@ At the moment, there are no pre-compiled binaries, but Go is cross-platform. You
 Dependencies:
 - Golang 1.7
 - Mongodb
+
+
+This software is released as-is under the MIT license. See the LICENSE file for more information
