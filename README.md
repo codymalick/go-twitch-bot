@@ -7,6 +7,7 @@ Current complete features:
 - Custom command response (example: "!mykappa" returns the number of times the user has said kappa or used any of the kappa emojis)
 
 Current in development features include:
+- Add CLI flags to change username/oauth token
 - Proper Oauth2 integration
 - Upvoting users
 - Tracking emoji use
@@ -26,3 +27,7 @@ Dependencies:
 
 
 This software is released as-is under the MIT license. See the LICENSE file for more information
+
+
+# Useful Links
+Twitch Oauth2 generator: http://twitchapps.com/tmi/
