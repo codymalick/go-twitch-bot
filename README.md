@@ -1,4 +1,5 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/codymalick/go-twitch-bot)](https://goreportcard.com/report/github.com/codymalick/go-twitch-bot)
+[![Go Report Card](https://goreportcard.com/badge/github.com/codymalick/go-twitch-bot)](https://goreportcard.com/report/github.com/codymalick/go-twitch-bot) 
+[![Build Status](https://travis-ci.org/codymalick/go-twitch-bot.svg?branch=master)](https://travis-ci.org/codymalick/go-twitch-bot)
 # Go Twitch Bot
 go-twitch-bot is an open source bot written in Go, designed to fill basic needs for streamers, as well as add fun features to the stream such as voting, emoji tracking, and more.
 
