@@ -5,7 +5,7 @@ go-twitch-bot is an open source bot written in Go, designed to fill basic needs 
 
 Current complete features:
 - Chat log
-- Per user emoji use
+- Per user kappa emoji use
 - Custom command response (example: "!mykappa" returns the number of times the user has said kappa or used any of the kappa emojis)
 
 Current in development features include:
