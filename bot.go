@@ -23,21 +23,12 @@ func registerEvents(connection *irc.Connection, channel string, db string, user 
 
 		fmt.Printf("%v:%v:%v\n", event.Arguments[0], event.User, event.Message())
 
-		if strings.Contains(event.Message(), "william") || strings.Contains(event.Message(), "willie") {
-			connection.Privmsg(channel, "Also, BILL!")
-		}
-
-		if strings.Contains(event.Message(), "!kojima") {
-			connection.Privmsg(channel, "KOOOOOOOOOJIMA")
-		}
-
-		if strings.Contains(event.Message(), "!kevin") {
-			connection.Privmsg(channel, "Metal Gear is not a stealth game")
-		}
-
+		// Example responce to "hey cmallocbot"
 		if strings.Contains(event.Message(), "hey "+user) {
 			connection.Privmsg(channel, "B) Hello Dave")
 		}
+
+		// Kappa counter
 		if strings.Contains(event.Message(), "KappaHD ") ||
 			strings.Contains(event.Message(), "MiniK ") ||
 			strings.Contains(event.Message(), "Kappa ") ||
@@ -53,9 +44,7 @@ func registerEvents(connection *irc.Connection, channel string, db string, user 
 		if strings.Contains(event.Message(), "!globalkappa") {
 			go globalKappaCounter(event.User, db, connection, channel)
 		}
-
 	})
-
 }
 
 func botMain(user string, nick string, channel string, oauth string, db string,

@@ -21,8 +21,8 @@ func readUserVariables(file string) string {
 
 func main() {
 
-	// read user variables
 	user := readUserVariables("config/user")
+
 	// Identical to user, twitch doesn't care about nicknames, but we need one
 	nick := user
 
@@ -34,6 +34,7 @@ func main() {
 
 	// Handle channel flag
 	cmdChannel := flag.String("c", channel, "Usage: TwitchEmoji [<channel>]")
+
 	// cmdDebug := flag.String("d", channel, "Usage")
 	flag.Parse()
 

@@ -16,7 +16,7 @@ func dbInsert(object interface{}, db string, collection string) error {
 		panic(err)
 	}
 
-	// Add connection close to the stack
+	// Add connection close to function exit stack
 	defer session.Close()
 
 	// Access the appropriate collection
