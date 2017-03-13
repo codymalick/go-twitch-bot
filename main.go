@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"io/ioutil"
+	"fmt"
 )
 
 const (
@@ -20,34 +21,32 @@ func readUserVariables(file string) string {
 }
 
 func main() {
+	// Handle flags
+	cmdUsername := flag.String("user", "defaultUsername", "Usage: go-twitch-bot -user <botname>")
+	cmdChannel := flag.String("c", "cmalloc", "Usage: go-twitch-bot -c <channel>")
+	cmdDb := flag.String("db", "go-twitch-bot", "Usage: go-twitch-bot -db <database>")
+	cmdOauth := flag.String("auth", "000000000", "Usage: go-twitch-bot -auth <oauth-token")
+	cmdDebug := flag.Bool("debug", false, "Usage: go-twitch-bot -debug")
 
-	user := readUserVariables("config/user")
-
-	// Identical to user, twitch doesn't care about nicknames, but we need one
-	nick := user
-
-	oauth := readUserVariables("config/secret")
-	channel := "#cmalloc"
-	debugFlag := false
-
-	db := "go-twitch-bot"
-
-	// Handle channel flag
-	cmdChannel := flag.String("c", channel, "Usage: TwitchEmoji [<channel>]")
-
-	// cmdDebug := flag.String("d", channel, "Usage")
 	flag.Parse()
 
-	*cmdChannel = "#" + *cmdChannel
+	username := *cmdUsername
+	// Identical to user, twitch doesn't care about nicknames, but we need one
+	nick := username
+	channel := "#" + *cmdChannel
+	db := *cmdDb
+	oauth := *cmdOauth
+	debugFlag := *cmdDebug
 
-	if *cmdChannel != channel {
-		channel = *cmdChannel
-	}
+	fmt.Printf("Username:%v\n", username)
+	fmt.Printf("Channel:%v\n", channel)
+	fmt.Printf("Database:%v\n", db)
+	fmt.Printf("OauthToken:%v\n", oauth)
 
-	// if cmdDebug != nil  {
-	// 	debugFlag = true
-	// }
+
+
+
 
 	// user, nick, channel, debug
-	botMain(user, nick, channel, oauth, db, debugFlag)
+	botMain(username, nick, channel, oauth, db, debugFlag)
 }
