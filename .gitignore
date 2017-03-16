@@ -24,3 +24,8 @@ _testmain.go
 *.prof
 
 config/secret
+
+.env
+config.env
+
+dockerdestroy.sh
