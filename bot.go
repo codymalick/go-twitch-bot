@@ -44,10 +44,10 @@ func registerEvents(connection *irc.Connection, channel string, db string, user 
 		if strings.Contains(event.Message(), "!globalkappa") {
 			go globalKappaCounter(event.User, db, connection, channel)
 		}
-		if strings.Contains(event.Message(), "!vote"){
+		if strings.Contains(event.Message(), "!vote") {
 			go startVote(event.User, db, connection, channel, event.Message())
 		}
-		if strings.Contains(event.Message(), "!cast"){
+		if strings.Contains(event.Message(), "!cast") {
 			go castVote(event.User, db, connection, channel, event.Message())
 		}
 	})
