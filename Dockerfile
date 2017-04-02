@@ -25,4 +25,4 @@ RUN go install -v
 # EXPOSE 27017
 
 # Start the application attached to a channel (NALCS1)
-ENTRYPOINT go-twitch-bot -auth oauth:mkvyz3e7o203nmk0si2cwal8ft6e6e -c twitchpresents -db go-twitch-bot -user cmallocbot
+ENTRYPOINT go-twitch-bot -auth oauth:000000000 -c nalcs1 -db go-twitch-bot -user cmallocbot

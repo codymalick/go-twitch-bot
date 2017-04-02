@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
 )
 
 const (
@@ -42,10 +42,6 @@ func main() {
 	fmt.Printf("Channel:%v\n", channel)
 	fmt.Printf("Database:%v\n", db)
 	fmt.Printf("OauthToken:%v\n", oauth)
-
-
-
-
 
 	// user, nick, channel, debug
 	botMain(username, nick, channel, oauth, db, debugFlag)

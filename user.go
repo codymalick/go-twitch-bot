@@ -30,4 +30,3 @@ func userCheck(username string, db string) bool {
 	}
 	return true
 }
-

@@ -29,3 +29,5 @@ config/secret
 config.env
 
 dockerdestroy.sh
+
+.idea

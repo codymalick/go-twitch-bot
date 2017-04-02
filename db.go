@@ -29,7 +29,6 @@ func dbInsert(object interface{}, db string, collection string) error {
 	return nil
 }
 
-
 // User related functions
 func dbFindUser(username string, db string, collection string) User {
 	session, err := mgo.Dial(database)
