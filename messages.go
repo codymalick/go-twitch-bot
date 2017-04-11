@@ -7,6 +7,7 @@ import (
 	"github.com/thoj/go-ircevent"
 	//"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"fmt"
 )
 
 type Message struct {
@@ -22,9 +23,21 @@ func createMessage(event *irc.Event, db string) {
 	mes := Message{Id: bson.NewObjectId(), Time: time.Now().Unix(), User: event.User,
 		Message: event.Message(), Channel: event.Arguments[0]}
 
-	err := dbInsert(mes, db, strings.TrimPrefix(event.Arguments[0], "#"))
+	switch databaseType {
+	case "maria":
+		err := mariaDbMessageInsert(mes, db, strings.TrimPrefix(event.Arguments[0], "#"))
 
-	if err != nil {
-		panic(err)
+		if err != nil {
+			fmt.Println(err)
+		}
+		break
+	case "mongo":
+		err := mongoDbInsert(mes, db, strings.TrimPrefix(event.Arguments[0], "#"))
+
+		if err != nil {
+			panic(err)
+		}
+		break
 	}
+
 }
