@@ -15,12 +15,20 @@ const (
 )
 
 func incrementKappa(username string, db string) {
-	if userCheck(username, db) {
-		dbFindAndUpdateUser(username, db, userCollection)
-	} else {
-		user := User{bson.NewObjectId(), username, 1}
-		dbInsert(user, db, userCollection)
+	switch databaseType {
+	case "mongo":
+		if userCheck(username, db) {
+			dbFindAndUpdateUser(username, db, userCollection)
+		} else {
+			user := User{bson.NewObjectId(), username, 1}
+			mongoDbInsert(user, db, userCollection)
+
+		}
+		break
+	case "maria":
+		break
 	}
+
 }
 
 func userCheck(username string, db string) bool {

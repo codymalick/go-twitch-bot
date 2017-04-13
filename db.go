@@ -5,10 +5,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-// This file contains any functions that directly call the database.
-
-// Generic function to insert any object type into a collection
-func dbInsert(object interface{}, db string, collection string) error {
+func mongoDbInsert(object interface{}, db string, collection string) error {
 	// Connect to database, https://labix.org/mgo
 	// 'database' is a global const declared in main.go
 	session, err := mgo.Dial(database)

@@ -6,7 +6,7 @@ import (
 )
 
 //vote usage !vote name topic1 topic2 topic3
-func startVote(username string, db string, connection *irc.Connection, channel string, message string) {
+func startVote(username string, db string, connection *irc.Connection, channel string, message string, vote chan int) {
 	//if no topics do nothing
 	var voteTopics []string
 	voteTopics = strings.Split(message, " ")

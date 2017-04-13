@@ -10,6 +10,7 @@ const (
 	// Twitch Variables
 	server   = "irc.chat.twitch.tv:6667"
 	database = "localhost:27017"
+	databaseType = "maria"
 )
 
 func readUserVariables(file string) string {
