@@ -35,41 +35,41 @@ func mariaFindUser(username string, db string) *User {
 	return &result
 }
 
+// This function will check for an existing user, and create a new one if none
+// are found.
 func mariaCheckOrInsert(username string, db string) *User {
 	result := mariaFindUser(username, db)
 	if result.Id != 0 {
+		fmt.Println("User exists")
 		return result
 	}
-	result = mariaAddUser(username, db)
+	mariaAddUser(username, db)
 	// We need the db generated id
 	// TODO: track last id in state
 	result = mariaFindUser(username, db)
+
 	return result
 }
 
-func mariaAddUser(username string, db string) *User {
-	var result User
+func mariaAddUser(username string, db string) error {
 	conn, _ := sql.Open("mysql", "bot:@/" + db)
 	defer conn.Close()
 
 	// select
-  rows, err := conn.Query("SELECT * FROM user WHERE username=\"" + username + "\"")
-	if err != nil {
-		panic(err)
-	}
+	// insert
+    stmt, err := conn.Prepare("INSERT user SET username=?")
+    if err != nil {
+  	  panic(err)
+    }
 
-  for rows.Next() {
-      var id int64
-      var user string
-      var kappa int64
-      err = rows.Scan(&id, &user, &kappa)
-      if err != nil {
-          log.Fatal(err)
-      }
-      result = User{id,user}
-  }
+    _, err = stmt.Exec(username)
 
-	return &result
+
+    if err != nil {
+  	  fmt.Println(err.Error())
+  	  return err
+    }
+	return nil
 }
 
 
