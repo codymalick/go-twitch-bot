@@ -40,7 +40,6 @@ func mariaFindUser(username string, db string) *User {
 func mariaCheckOrInsert(username string, db string) *User {
 	result := mariaFindUser(username, db)
 	if result.Id != 0 {
-		fmt.Println("User exists")
 		return result
 	}
 	mariaAddUser(username, db)
@@ -79,12 +78,12 @@ func mariaDbMessageInsert(message Message, db string, collection string) error {
 	defer conn.Close()
 
 	// insert
-	stmt, err := conn.Prepare("INSERT message SET channel=?,user=?,message=?,timestamp=?")
+	stmt, err := conn.Prepare("INSERT message SET channel=?,userid=?,message=?,timestamp=?")
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = stmt.Exec(message.Channel, message.User, strings.TrimSpace(string(message.Message)), message.Time)
+	_, err = stmt.Exec(message.Channel, message.Userid, strings.TrimSpace(string(message.Message)), message.Time)
 
 
 	if err != nil {

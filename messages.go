@@ -13,7 +13,7 @@ import (
 type Message struct {
 	Id      int64 `bson:"_id"`
 	Time    int64         `bson:"time"`
-	User    string        `bson:"user"`
+	Userid    int64        `bson:"userid"`
 	Message string        `bson:"message"`
 	Channel string        `bson:"channel"`
 }
@@ -25,7 +25,7 @@ func createMessage(event *irc.Event, db string, cache *UserCache, user *User) {
 	// }
 
 	// Format message in form that the database can use
-	mes := Message{Id: 0, Time: time.Now().Unix(), User: event.User,
+	mes := Message{Id: 0, Time: time.Now().Unix(), Userid: user.Id,
 		Message: event.Message(), Channel: event.Arguments[0]}
 
 	switch databaseType {

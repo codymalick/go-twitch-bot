@@ -41,7 +41,6 @@ func (bot *Bot) registerEvents() {
 
 		// Add user to db
 		user := mariaCheckOrInsert(event.User, bot.Db)
-		fmt.Printf("%v:%v\n", user.Username, user.Id)
 
 		// spawn thread, record message
 		go createMessage(event, bot.Db, &bot.Cache, user)
