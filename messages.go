@@ -15,10 +15,10 @@ type Message struct {
 	Time    int64         `bson:"time"`
 	Userid    int64        `bson:"userid"`
 	Message string        `bson:"message"`
-	Channel string        `bson:"channel"`
+	Channelid int64        `bson:"channel"`
 }
 
-func createMessage(event *irc.Event, db string, cache *UserCache, user *User) {
+func createMessage(event *irc.Event, db string, cache *UserCache, user *User, chann *Channel) {
 	// Check user cache for recent user
 	// if !checkCache(event.User, &cache) {
 	// 	cache = append(cache, User{})
@@ -26,7 +26,7 @@ func createMessage(event *irc.Event, db string, cache *UserCache, user *User) {
 
 	// Format message in form that the database can use
 	mes := Message{Id: 0, Time: time.Now().Unix(), Userid: user.Id,
-		Message: event.Message(), Channel: event.Arguments[0]}
+		Message: event.Message(), Channelid: chann.Id}
 
 	switch databaseType {
 	case "maria":

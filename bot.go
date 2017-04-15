@@ -9,7 +9,7 @@ import (
 
 type Bot struct {
 	User string
-	Channel string
+	Channel Channel
 	Db string
 	Connection *irc.Connection
 	Voting chan int
@@ -17,9 +17,8 @@ type Bot struct {
 }
 
 func (bot *Bot) registerEvents() {
-
 	// Register event handlers
-	bot.Connection.AddCallback("001", func(e *irc.Event) { bot.Connection.Join(bot.Channel) })
+	bot.Connection.AddCallback("001", func(e *irc.Event) { bot.Connection.Join(bot.Channel.Name) })
 
 	// Any message sent on the server, have to be followed on the server to respond
 	bot.Connection.AddCallback("PRIVMSG", func(event *irc.Event) {
@@ -43,13 +42,13 @@ func (bot *Bot) registerEvents() {
 		user := mariaCheckOrInsert(event.User, bot.Db)
 
 		// spawn thread, record message
-		go createMessage(event, bot.Db, &bot.Cache, user)
+		go createMessage(event, bot.Db, &bot.Cache, user, &bot.Channel)
 
 		fmt.Printf("%v:%v:%v\n", event.Arguments[0], user.Username, event.Message())
 
 		// Example response to "hey cmallocbot"
 		if strings.Contains(event.Message(), "hey " + bot.User) {
-			bot.Connection.Privmsg(bot.Channel, "B) Hello Dave")
+			bot.Connection.Privmsg(bot.Channel.Name, "B) Hello Dave")
 		}
 
 		// Kappa counter
@@ -69,10 +68,10 @@ func (bot *Bot) registerEvents() {
 		// 	go globalKappaCounter(event.User, bot.Db, bot.Connection, bot.Channel)
 		// }
 		if strings.Contains(event.Message(), "!vote") {
-			go startVote(event.User, bot.Db, bot.Connection, bot.Channel, event.Message(), bot.Voting)
+			go startVote(event.User, bot.Db, bot.Connection, bot.Channel.Name, event.Message(), bot.Voting)
 		}
 		if strings.Contains(event.Message(), "!cast") {
-			go castVote(event.User, bot.Db, bot.Connection, bot.Channel, event.Message())
+			go castVote(event.User, bot.Db, bot.Connection, bot.Channel.Name, event.Message())
 		}
 	})
 }
@@ -82,7 +81,7 @@ func botMain(user string, nick string, channel string, oauth string, db string,
 
 	bot := Bot{
 		User: user,
-		Channel: channel,
+		Channel: mariaDbVerifyChannel(channel, db),
 		Db: db,
 		Connection: irc.IRC(nick,user),
 		Cache: UserCache{make([]User, 0, cacheSize)},
@@ -92,6 +91,8 @@ func botMain(user string, nick string, channel string, oauth string, db string,
 	bot.Connection.VerboseCallbackHandler = false
 	bot.Connection.Debug = debug
 	bot.Connection.UseTLS = false
+
+
 
 	bot.registerEvents()
 
