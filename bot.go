@@ -13,6 +13,7 @@ type Bot struct {
 	Db string
 	Connection *irc.Connection
 	Voting chan int
+	Cache UserCache
 }
 
 func (bot *Bot) registerEvents() {
@@ -26,10 +27,25 @@ func (bot *Bot) registerEvents() {
 		//event.Nick Contains the sender
 		//event.Arguments[0] Contains the channel
 
-		// spawn thread, record message
-		go createMessage(event, bot.Db)
+		// var user User
+		//
+		// // Check for cached user
+		// if cacheUser := checkCache(event.User, &bot.Cache); cacheUser == nil {
+		// 	// if the user doesn't exist in the cache, add the user to the cache
+		// 	newUser := User{0, event.User, 0}
+		// 	bot.Cache.Recent = append(bot.Cache.Recent, newUser)
+		// 	fmt.Printf("cache miss, added %v\n", newUser.Username)
+		// } else {
+		// 	fmt.Printf("cache hit, %v\n", cacheUser.Username)
+		// }
 
-		fmt.Printf("%v:%v:%v\n", event.Arguments[0], event.User, event.Message())
+		// Add user to db
+		user := mariaAddUser(event.User, bot.Db)
+
+		// spawn thread, record message
+		go createMessage(event, bot.Db, &bot.Cache, user)
+
+		fmt.Printf("%v:%v:%v\n", event.Arguments[0], user.Username, event.Message())
 
 		// Example response to "hey cmallocbot"
 		if strings.Contains(event.Message(), "hey " + bot.User) {
@@ -42,16 +58,16 @@ func (bot *Bot) registerEvents() {
 			strings.Contains(event.Message(), "Kappa ") ||
 			strings.Contains(event.Message(), "kappa") {
 
-			go incrementKappa(event.User, bot.Db)
+			//go incrementKappa(event.User, bot.Db)
 
 		}
 
-		if strings.Contains(event.Message(), "!mykappa") {
-			go kappaCounter(event.User, bot.Db, bot.Connection, bot.Channel)
-		}
-		if strings.Contains(event.Message(), "!globalkappa") {
-			go globalKappaCounter(event.User, bot.Db, bot.Connection, bot.Channel)
-		}
+		// if strings.Contains(event.Message(), "!mykappa") {
+		// 	go kappaCounter(event.User, bot.Db, bot.Connection, bot.Channel)
+		// }
+		// if strings.Contains(event.Message(), "!globalkappa") {
+		// 	go globalKappaCounter(event.User, bot.Db, bot.Connection, bot.Channel)
+		// }
 		if strings.Contains(event.Message(), "!vote") {
 			go startVote(event.User, bot.Db, bot.Connection, bot.Channel, event.Message(), bot.Voting)
 		}
@@ -69,6 +85,7 @@ func botMain(user string, nick string, channel string, oauth string, db string,
 		Channel: channel,
 		Db: db,
 		Connection: irc.IRC(nick,user),
+		Cache: UserCache{make([]User, 0, cacheSize)},
 	}
 	bot.Connection.Password = oauth
 

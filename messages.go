@@ -6,21 +6,26 @@ import (
 
 	"github.com/thoj/go-ircevent"
 	//"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	//"gopkg.in/mgo.v2/bson"
 	"fmt"
 )
 
 type Message struct {
-	Id      bson.ObjectId `bson:"_id"`
+	Id      int64 `bson:"_id"`
 	Time    int64         `bson:"time"`
 	User    string        `bson:"user"`
 	Message string        `bson:"message"`
 	Channel string        `bson:"channel"`
 }
 
-func createMessage(event *irc.Event, db string) {
+func createMessage(event *irc.Event, db string, cache *UserCache, user *User) {
+	// Check user cache for recent user
+	// if !checkCache(event.User, &cache) {
+	// 	cache = append(cache, User{})
+	// }
+
 	// Format message in form that the database can use
-	mes := Message{Id: bson.NewObjectId(), Time: time.Now().Unix(), User: event.User,
+	mes := Message{Id: 0, Time: time.Now().Unix(), User: event.User,
 		Message: event.Message(), Channel: event.Arguments[0]}
 
 	switch databaseType {
